@@ -20,7 +20,7 @@ ui <- dashboardPage(
                 div(
                     fileInput("file", "Upload File", multiple = FALSE, accept = c(".h5")),
                     actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
-                    actionButton("upload", "Upload", icon = icon("upload"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                    actionButton("upload", "Convert", icon = icon("arrows-rotate"), style = "color: #fff; background-color: #28a745; width: 87.25%")
                     )            )
                 )
   ),
