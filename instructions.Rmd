@@ -8,7 +8,7 @@
     - Download your Seurat object
 -   Perform pre-processing on your Seurat object using **Analyze and Process**
     - Upload your .rds file and specify the desired values and parameters to be used
-    - Press the `Run` button to run the analysis.
+    - Press the `Process` button to run the analysis.
     - Download your pre-processed Seurat object
 -   Perform dimensionality reduction on your pre-processed Seurat object using **Plot and Explore**
     - Upload your pre-processed .rds file and specify the desired dimensionality reduction algorithm

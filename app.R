@@ -22,7 +22,7 @@ ui <- dashboardPage(
                 div(
                     fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
                     actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
-                    actionButton("run-analyze", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                    actionButton("run-analyze", "Process", icon = icon("gears"), style = "color: #fff; background-color: #28a745; width: 87.25%")
                     ),          
                 div(
                   textInput("label_input", "nCounts threshold:", value = " "),
@@ -41,7 +41,15 @@ ui <- dashboardPage(
                   div(
                     id = "numericInputDiv",
                     uiOutput("numeric_input"))            
-                   )         ),
+                   ),
+                div(
+                  id = "dropdownDiv",
+                  selectInput(
+                    inputId = "myDropdown",
+                    label = "Normalization Method:",
+                    choices = c("LogNormalize", "CLR", "RC")
+                  )
+                  )          ),
                 
                 
                 conditionalPanel(condition = "input.tab == 'upload'",
