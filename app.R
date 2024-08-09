@@ -2,7 +2,7 @@ source("global.R")
 
 
 ui <- dashboardPage(
-  dashboardHeader(title = 'scRNA Analyzer'),
+  dashboardHeader(title = 'DR-scRNAseq'),
   dashboardSidebar(
     sidebarMenu(id="tab",
                 useShinyjs(),
@@ -41,7 +41,7 @@ server <- function(input, output, session){
   
   shinyjs::disable("run")
   
-  #if file is uploaded, run avail
+#if a file is uploaded, run button will be available
   observe({
     if (is.null(input$file) != TRUE){
       shinyjs::enable("run")
@@ -50,7 +50,7 @@ server <- function(input, output, session){
     }
   })
   
-  #if file is uploaded, upload avail
+#if a file is uploaded, upload button will be available
   observe({
     if (is.null(input$file) != TRUE){
       shinyjs::enable("upload")
@@ -59,19 +59,19 @@ server <- function(input, output, session){
     }
   })
   
-  #for resetting run
+#if reset for run is clicked, run button will not be available
   observeEvent(input$reset, {
     shinyjs::reset("file")
     shinyjs::disable("run")
   })
   
-  #for resetting upload
+#if reset for upload is clicked, run button will not be available
   observeEvent(input$reset, {
     shinyjs::reset("file")
     shinyjs::disable("upload")
   })
   
-  #for plotting
+#for plotting tSNE
   observeEvent(input$run, {
     shinyjs::disable("run")
     
@@ -149,12 +149,12 @@ server <- function(input, output, session){
     }
   })
   
-#for uploading
+#for converting to h5
   observeEvent(input$upload, {
     shinyjs::disable("upload")
     
     show_modal_spinner(text = "Converting...")
-    obj <- load_seurat_obj(input$file$datapath)
+    obj <- load_seurat_obj(input$upload$datapath)
     if (is.vector(obj)){
       showModal(modalDialog(
         title = "Error with file",
@@ -166,7 +166,7 @@ server <- function(input, output, session){
     } else {
       
       #h5 to seurat object
-      output$seuratobj <- load_seurat_obj(path)
+      output$seuratobj <- load_h5(path)
       
       
       #download the rds file
@@ -175,7 +175,7 @@ server <- function(input, output, session){
           paste0(input$metadata_col, '_SeuratObj', '.rds')
         },
         content = function(file){
-          saveRDS(my_data, file = file)
+          saveRDS(seuratobj, file = file)
         }
       )
       
@@ -187,7 +187,7 @@ server <- function(input, output, session){
     }
   })
   
-  #clear all sidebar inputs when 'Reset' button is clicked for run
+#clear all sidebar inputs when 'Reset' button is clicked for run
   observeEvent(input$reset, {
     shinyjs::reset("file")
     removeTab("main_tabs", "UMAP")

@@ -1,9 +1,17 @@
-# Welcome to scRNAseq Analyzer!
+# Welcome to DR-scRNAseq!
 
 ### To use this app:
 
--   Generate your Seurat object by running the Seurat tutorial
--   Upload the Seurat object using **Upload file**
--   Press the `Run` button to run the analysis.
-    -   2 tabs will appear with data that you can explore
--   Press the `Reset` button to clear input files and remove all tabs.
+-   Generate your Seurat object using **Upload and Convert**
+    - Upload your .h5 or .gz file
+    - Press the `Convert` button to perform the conversion
+    - Download your Seurat object
+-   Perform pre-processing on your Seurat object using **Analyze and Process**
+    - Upload your .rds file and specify the desired values and parameters to be used
+    - Press the `Run` button to run the analysis.
+    - Download your pre-processed Seurat object
+-   Perform dimensionality reduction on your pre-processed Seurat object using **Plot and Explore**
+    - Upload your pre-processed .rds file and specify the desired dimensionality reduction algorithm
+    - Press the `Run` button to execute the dimensionality reduction and create the plots
+    - 2 tabs will appear with data that you can explore
+    - Download your plots

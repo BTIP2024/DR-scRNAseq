@@ -39,7 +39,8 @@ load_seurat_obj <- function(path){
   return(obj)
 }
 
-load_seurat_obj <- function(path){
+
+load_h5 <- function(path){
   errors <- c()
   #check file ext
   if(!tolower(tools::file_ext(path)) == 'h5'){
