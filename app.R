@@ -14,8 +14,23 @@ ui <- dashboardPage(
                 div(
                     fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
                     actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
-                    actionButton("run", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                    actionButton("run-plot", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
                     )            ),
+                
+                
+                conditionalPanel(condition = "input.tab == 'analyze'",
+                div(
+                    fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
+                    actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
+                    actionButton("run-analyze", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                    ),          
+                div(
+                  fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
+                  actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
+                  actionButton("run", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                   )            ),
+                
+                
                 conditionalPanel(condition = "input.tab == 'upload'",
                 div(
                     fileInput("file", "Upload File", multiple = FALSE, accept = c(".h5")),
@@ -41,12 +56,21 @@ server <- function(input, output, session){
   
   shinyjs::disable("run")
   
-#if a file is uploaded, run button will be available
+#if a file is uploaded, run-plot button will be available
   observe({
     if (is.null(input$file) != TRUE){
-      shinyjs::enable("run")
+      shinyjs::enable("run-plot")
     } else {
-      shinyjs::disable("run")
+      shinyjs::disable("run-plot")
+    }
+  })
+  
+#if a file is uploaded, run-analyze button will be available
+  observe({
+    if (is.null(input$file) != TRUE){
+      shinyjs::enable("run-analyze")
+    } else {
+      shinyjs::disable("run-analyze")
     }
   })
   
@@ -59,13 +83,19 @@ server <- function(input, output, session){
     }
   })
   
-#if reset for run is clicked, run button will not be available
+#if reset for run is clicked, run-plot button will not be available
   observeEvent(input$reset, {
     shinyjs::reset("file")
-    shinyjs::disable("run")
+    shinyjs::disable("run-plot")
   })
   
-#if reset for upload is clicked, run button will not be available
+#if reset for run is clicked, run-plot button will not be available
+  observeEvent(input$reset, {
+    shinyjs::reset("file")
+    shinyjs::disable("run-analyze")
+  })
+  
+#if reset for upload is clicked, upload button will not be available
   observeEvent(input$reset, {
     shinyjs::reset("file")
     shinyjs::disable("upload")
