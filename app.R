@@ -25,17 +25,23 @@ ui <- dashboardPage(
                     actionButton("run-analyze", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
                     ),          
                 div(
-                  fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
-                  actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
-                  actionButton("run", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                  textInput("label_input", "nCounts threshold:", value = " "),
+                  div(
+                    id = "numericInputDiv",
+                    uiOutput("numeric_input"))            
                    ),
                 div(
-                  id = "numericInputDiv",
-                  numericInput(
-                    inputId = "numeric_input",
-                    label = "nCounts threshold:",
-                    value = 0)           
-                  )            ),
+                  textInput("label_input", "nFeatures threshold:", value = " "),
+                  div(
+                    id = "numericInputDiv",
+                    uiOutput("numeric_input"))            
+                   ),
+                div(
+                  textInput("label_input", "mt.counts threshold:", value = " "),
+                  div(
+                    id = "numericInputDiv",
+                    uiOutput("numeric_input"))            
+                   )         ),
                 
                 
                 conditionalPanel(condition = "input.tab == 'upload'",
@@ -107,6 +113,16 @@ server <- function(input, output, session){
     shinyjs::reset("file")
     shinyjs::disable("upload")
   })
+  
+#input
+ # output$numeric_input <- renderUI({
+ #    numericInput(
+ #      inputId = "numeric_input",
+ #      label = input$label_input,
+ #      value = 0
+ #    )
+ #  })
+
   
 #for plotting tSNE
   observeEvent(input$run, {
