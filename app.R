@@ -28,7 +28,14 @@ ui <- dashboardPage(
                   fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
                   actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
                   actionButton("run", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
-                   )            ),
+                   ),
+                div(
+                  id = "numericInputDiv",
+                  numericInput(
+                    inputId = "numeric_input",
+                    label = "nCounts threshold:",
+                    value = 0)           
+                  )            ),
                 
                 
                 conditionalPanel(condition = "input.tab == 'upload'",
