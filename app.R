@@ -14,8 +14,16 @@ ui <- dashboardPage(
                 div(
                     fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
                     actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
-                    actionButton("run-plot", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
-                    )            ),
+                    actionButton("run", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                    ),
+                div(
+                  id = "dropdownDiv",
+                  selectInput(
+                    inputId = "myDropdown",
+                    label = "Dimensionality Reduction Method:",
+                    choices = c("PCA", "UMAP", "t-SNE")
+                             )
+                  )          ),
                 
                 
                 conditionalPanel(condition = "input.tab == 'analyze'",
@@ -57,7 +65,7 @@ ui <- dashboardPage(
                     fileInput("file", "Upload File", multiple = FALSE, accept = c(".h5")),
                     actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
                     actionButton("upload", "Convert", icon = icon("arrows-rotate"), style = "color: #fff; background-color: #28a745; width: 87.25%")
-                    )            )
+                    )       )
                 )
   ),
   dashboardBody(
@@ -80,9 +88,9 @@ server <- function(input, output, session){
 #if a file is uploaded, run-plot button will be available
   observe({
     if (is.null(input$file) != TRUE){
-      shinyjs::enable("run-plot")
+      shinyjs::enable("run")
     } else {
-      shinyjs::disable("run-plot")
+      shinyjs::disable("run")
     }
   })
   
@@ -107,7 +115,7 @@ server <- function(input, output, session){
 #if reset for run is clicked, run-plot button will not be available
   observeEvent(input$reset, {
     shinyjs::reset("file")
-    shinyjs::disable("run-plot")
+    shinyjs::disable("run")
   })
   
 #if reset for run is clicked, run-plot button will not be available

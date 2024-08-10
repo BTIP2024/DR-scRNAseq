@@ -14,4 +14,4 @@
     - Upload your pre-processed .rds file and specify the desired dimensionality reduction algorithm
     - Press the `Run` button to execute the dimensionality reduction and create the plots
     - 2 tabs will appear with data that you can explore
-    - Download your plots
+    - There will be option to download your plots
