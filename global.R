@@ -87,12 +87,46 @@ create_metadata_umap <- function(obj, col){
   return(umap)
 }
 
+create_metadata_pca <- function(obj, col){
+  if (col %in% c("nCount_RNA", "nFeature_RNA", "percent.mt")){
+    col_df <- data.frame(obj@reductions$pca@cell.embeddings, data = obj@meta.data[,col])
+    pca <- ggplot(data = col_df) +
+      geom_point(mapping = aes(PC_1, PC_2, color = log10(data)), size = 0.01) +
+      scale_colour_gradientn(colours = rainbow(7))
+  } else if (col %in% colnames(obj@meta.data)) {
+    pca <- DimPlot(obj, pt.size = .1, label = F, label.size = 4, group.by = col, reduction = "pca")
+  } else {
+    pca <- ggplot() +
+      theme_void() +
+      geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
+      theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  }
+  return(pca)
+}
+
+create_metadata_tsne <- function(obj, col){
+  if (col %in% c("nCount_RNA", "nFeature_RNA", "percent.mt")){
+    col_df <- data.frame(obj@reductions$tsne@cell.embeddings, data = obj@meta.data[,col])
+    tsne <- ggplot(data = col_df) +
+      geom_point(mapping = aes(tsne_1, tsne_2, color = log10(data)), size = 0.01) +
+      scale_colour_gradientn(colours = rainbow(7))
+  } else if (col %in% colnames(obj@meta.data)) {
+    tsne <- DimPlot(obj, pt.size = .1, label = F, label.size = 4, group.by = col, reduction = "tsne")
+  } else {
+    tsne <- ggplot() +
+      theme_void() +
+      geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
+      theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  }
+  return(tsne)
+}
+
 
 create_feature_plot <- function(obj, gene) {
   if (gene %in% rownames(obj)) {
     FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE)
   } else {
-    FP <- ggplot() + 
+    FP <- ggplot() +
       theme_void() + 
       geom_text(aes(x = 0.5, y = 0.5, label = "Gene doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))

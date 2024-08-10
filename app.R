@@ -9,17 +9,17 @@ ui <- dashboardPage(
                 menuItem("Homepage", tabName = "home", icon = icon("house")),
                 menuItem("Upload and Convert", tabName = "upload", icon = icon("upload")),
                 menuItem("Analyze and Process", tabName = "analyze", icon = icon("edit")),
-                menuItem("Plot and Explore", tabName = "explore", icon = icon("chart-line")),
-                conditionalPanel(condition = "input.tab == 'explore'",
+                menuItem("Plot and Explore", tabName = "plot", icon = icon("chart-line")),
+                conditionalPanel(condition = "input.tab == 'plot'",
                 div(
-                    fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
-                    actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
-                    actionButton("run", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                    fileInput("fileplot", "Upload File", multiple = FALSE, accept = c(".rds")),
+                    actionButton("resetplot", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
+                    actionButton("runplot", "Run", icon = icon("play"), style = "color: #fff; background-color: #28a745; width: 87.25%")
                     ),
                 div(
                   id = "dropdownDiv",
                   selectInput(
-                    inputId = "myDropdown",
+                    inputId = "dimplot",
                     label = "Dimensionality Reduction Method:",
                     choices = c("PCA", "UMAP", "t-SNE")
                              )
@@ -83,14 +83,14 @@ ui <- dashboardPage(
 server <- function(input, output, session){
   options(shiny.maxRequestSize = 300*1024^2)
   
-  shinyjs::disable("run")
+  shinyjs::disable("runplot")
   
 #if a file is uploaded, run-plot button will be available
   observe({
-    if (is.null(input$file) != TRUE){
-      shinyjs::enable("run")
+    if (is.null(input$fileplot) != TRUE){
+      shinyjs::enable("runplot")
     } else {
-      shinyjs::disable("run")
+      shinyjs::disable("runplot")
     }
   })
   
@@ -113,12 +113,12 @@ server <- function(input, output, session){
   })
   
 #if reset for run is clicked, run-plot button will not be available
-  observeEvent(input$reset, {
-    shinyjs::reset("file")
-    shinyjs::disable("run")
+  observeEvent(input$resetplot, {
+    shinyjs::reset("fileplot")
+    shinyjs::disable("runplot")
   })
   
-#if reset for run is clicked, run-plot button will not be available
+#if reset for run is clicked, run-analyze button will not be available
   observeEvent(input$reset, {
     shinyjs::reset("file")
     shinyjs::disable("run-analyze")
@@ -140,22 +140,24 @@ server <- function(input, output, session){
  #  })
 
   
-#for plotting tSNE
-  observeEvent(input$run, {
-    shinyjs::disable("run")
+#for plotting 
+  observeEvent(input$runplot, {
+    shinyjs::disable("runplot")
     
     show_modal_spinner(text = "Preparing plots...")
-    obj <- load_seurat_obj(input$file$datapath)
+    obj <- load_seurat_obj(input$fileplot$datapath)
     if (is.vector(obj)){
       showModal(modalDialog(
         title = "Error with file",
         HTML("<h5>There is an error with the file you uploaded. See below for more details.</h5><br>",
              paste(unlist(obj), collapse = "<br><br>"))
       ))
-      shinyjs::enable("run")
+      shinyjs::enable("runplot")
       
     } else {
       
+      #for UMAP
+      if (input$dimplot == "UMAP"){
       output$umap <- renderPlot({
         if (!is.null(input$metadata_col)) {
           create_metadata_umap(obj, input$metadata_col)
@@ -213,9 +215,132 @@ server <- function(input, output, session){
       )
       
       remove_modal_spinner()
-      shinyjs::enable("run")
+      shinyjs::enable("runplot")
       
-    }
+      }
+      else if (input$dimplot == "PCA"){
+        output$pca <- renderPlot({
+          if (!is.null(input$metadata_col)) {
+            create_metadata_pca(obj, input$metadata_col)
+          }
+        })
+        
+        output$featurePlot <- renderPlot({
+          if (!is.null(input$gene)) {
+            create_feature_plot(obj, input$gene)
+          }
+        })
+        
+        insertTab(
+          inputId = "main_tabs",
+          tabPanel(
+            "PCA",
+            fluidRow(
+              column(
+                width = 8,
+                plotOutput(outputId = 'pca'),
+                downloadButton("download_pca", "Download PCA")
+              ),
+              column(
+                width = 4,
+                selectizeInput("metadata_col", 
+                               "Metadata Column", 
+                               colnames(obj@meta.data)
+                )
+              )
+            ),
+            style = "height: 90%; width: 95%; padding-top: 5%;"
+          ),
+          select = TRUE
+        )
+        insertTab(
+          inputId = "main_tabs",
+          tabPanel(
+            "Gene Expression",
+            fluidRow(
+              column(
+                width = 8,
+                plotOutput(outputId = 'featurePlot'),
+                downloadButton("downloadFeaturePlot", "Download Feature Plot")
+              ),
+              column(
+                width = 4,
+                selectizeInput("gene", 
+                               "Genes", 
+                               rownames(obj)
+                )
+              )
+            ),
+            style = "height: 90%; width: 95%; padding-top: 5%;"
+          )
+        )
+        
+        remove_modal_spinner()
+        shinyjs::enable("runplot")
+        
+      }
+      else if (input$dimplot == "t-SNE"){
+        output$umap <- renderPlot({
+          if (!is.null(input$metadata_col)) {
+            create_metadata_tsne(obj, input$metadata_col)
+          }
+        })
+        
+        output$featurePlot <- renderPlot({
+          if (!is.null(input$gene)) {
+            create_feature_plot(obj, input$gene)
+          }
+        })
+        
+        insertTab(
+          inputId = "main_tabs",
+          tabPanel(
+            "t-SNE",
+            fluidRow(
+              column(
+                width = 8,
+                plotOutput(outputId = 'umap'),
+                downloadButton("download_tsne", "Download t-SNE")
+              ),
+              column(
+                width = 4,
+                selectizeInput("metadata_col", 
+                               "Metadata Column", 
+                               colnames(obj@meta.data)
+                )
+              )
+            ),
+            style = "height: 90%; width: 95%; padding-top: 5%;"
+          ),
+          select = TRUE
+        )
+        insertTab(
+          inputId = "main_tabs",
+          tabPanel(
+            "Gene Expression",
+            fluidRow(
+              column(
+                width = 8,
+                plotOutput(outputId = 'featurePlot'),
+                downloadButton("downloadFeaturePlot", "Download Feature Plot")
+              ),
+              column(
+                width = 4,
+                selectizeInput("gene", 
+                               "Genes", 
+                               rownames(obj)
+                )
+              )
+            ),
+            style = "height: 90%; width: 95%; padding-top: 5%;"
+          )
+        )
+        
+        remove_modal_spinner()
+        shinyjs::enable("runplot")
+        
+      }
+      }
   })
   
 #for converting to h5
