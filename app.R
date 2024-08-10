@@ -164,7 +164,7 @@ server <- function(input, output, session){
         }
       })
       
-      output$featurePlot <- renderPlot({
+      output$featurePlotUMAP <- renderPlot({
         if (!is.null(input$gene)) {
           create_feature_plot(obj, input$gene)
         }
@@ -199,7 +199,7 @@ server <- function(input, output, session){
           fluidRow(
             column(
               width = 8,
-              plotOutput(outputId = 'featurePlot'),
+              plotOutput(outputId = 'featurePlotUMAP'),
               downloadButton("downloadFeaturePlot", "Download Feature Plot")
             ),
             column(
@@ -218,6 +218,8 @@ server <- function(input, output, session){
       shinyjs::enable("runplot")
       
       }
+      
+      #for PCA
       else if (input$dimplot == "PCA"){
         output$pca <- renderPlot({
           if (!is.null(input$metadata_col)) {
@@ -225,7 +227,7 @@ server <- function(input, output, session){
           }
         })
         
-        output$featurePlot <- renderPlot({
+        output$featurePlotPCA <- renderPlot({
           if (!is.null(input$gene)) {
             create_feature_plot(obj, input$gene)
           }
@@ -260,7 +262,7 @@ server <- function(input, output, session){
             fluidRow(
               column(
                 width = 8,
-                plotOutput(outputId = 'featurePlot'),
+                plotOutput(outputId = 'featurePlotPCA'),
                 downloadButton("downloadFeaturePlot", "Download Feature Plot")
               ),
               column(
@@ -279,6 +281,8 @@ server <- function(input, output, session){
         shinyjs::enable("runplot")
         
       }
+      
+      #for t-SNE
       else if (input$dimplot == "t-SNE"){
         output$umap <- renderPlot({
           if (!is.null(input$metadata_col)) {
@@ -286,7 +290,7 @@ server <- function(input, output, session){
           }
         })
         
-        output$featurePlot <- renderPlot({
+        output$featurePlotTSNE <- renderPlot({
           if (!is.null(input$gene)) {
             create_feature_plot(obj, input$gene)
           }
@@ -321,7 +325,7 @@ server <- function(input, output, session){
             fluidRow(
               column(
                 width = 8,
-                plotOutput(outputId = 'featurePlot'),
+                plotOutput(outputId = 'featurePlotTSNE'),
                 downloadButton("downloadFeaturePlot", "Download Feature Plot")
               ),
               column(
