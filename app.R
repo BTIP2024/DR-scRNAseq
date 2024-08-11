@@ -65,7 +65,7 @@ ui <- dashboardPage(
                 
                 conditionalPanel(condition = "input.tab == 'upload'",
                 div(
-                    fileInput("fileupload", "Upload h5 File", multiple = FALSE, accept = c(".h5")),
+                    fileInput("fileupload", "Upload h5 File", multiple = FALSE, accept = c(".h5", ".h5ad")),
                     actionButton("resetupload", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
                     actionButton("convertupload", "Convert", icon = icon("arrows-rotate"), style = "color: #fff; background-color: #28a745; width: 87.25%")
                     ),
@@ -384,25 +384,57 @@ server <- function(input, output, session){
       }
       }
   })
-
   
+#for uploading h5
   observeEvent(input$convertupload, {
-    req(input$fileupload)
     shinyjs::disable("convertupload")
     show_modal_spinner(text = "Converting...")
+    obj <- load_seurat_obj(input$fileupload$datapath)
     
-    coundata <- Seurat::Read10X_h5(input$fileupload$datapath)
-    seurat_obj$data <- Seurat::CreateSeuratObject(counts = count_data, project = "MySeuratObject")
-    output$downloadData <- downloadHandler(
-      filename = function() {
-        paste("seurat_object_", Sys.Date(), ".rds", sep = "")
-      },
-      content = function(file) {
-        saveRDS(seurat_obj$data, file = file)
-      }
-    )
-  }
-              )
+    if (is.vector(obj)){
+      showModal(modalDialog(
+        title = "Error with file",
+        HTML("<h5>There is an error with the file you uploaded. See below for more details.</h5><br>",
+             paste(unlist(obj), collapse = "<br><br>"))
+      ))
+      shinyjs::enable("runupload")
+    } else {
+      
+      converted_obj <- load_h5(obj)
+      
+      #download
+      output$downloaddata <- downloadHandler(
+        filename = function(){
+          paste0('SeuratObj', '.rds')
+        },
+        content = function(file){
+          saveRDS(converted_obj, file = file)
+        }
+      )
+      
+      remove_modal_spinner()
+      shinyjs::enable("runupload")
+      
+  }})
+
+  
+  # observeEvent(input$convertupload, {
+  #   req(input$fileupload)
+  #   shinyjs::disable("convertupload")
+  #   show_modal_spinner(text = "Converting...")
+  #   
+  #   coundata <- Seurat::Read10X_h5(input$fileupload$datapath)
+  #   seurat_obj$data <- Seurat::CreateSeuratObject(counts = count_data, project = "MySeuratObject")
+  #   output$downloadData <- downloadHandler(
+  #     filename = function() {
+  #       paste("seurat_object_", Sys.Date(), ".rds", sep = "")
+  #     },
+  #     content = function(file) {
+  #       saveRDS(seurat_obj$data, file = file)
+  #     }
+  #   )
+  # }
+  #             )
 
   
 #clear all sidebar inputs when 'Reset' button is clicked for run

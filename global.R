@@ -39,37 +39,6 @@ load_seurat_obj <- function(path){
   return(obj)
 }
 
-
-load_h5 <- function(path){
-  errors <- c()
-  #check file ext
-  if(!tolower(tools::file_ext(path)) == 'h5'){
-    errors <- c(errors, "Invalid h5 file")
-    return(errors)
-  }
-  
-  #try to read in file
-  tryCatch(
-    {
-      obj1 <- Seurat::Read10X_h5(path)
-      obj <- Seurat::CreateSeuratObject(counts = cts, project = 'NSCLC', min.cells = 3, min.features = 200)
-    },
-    error = function(e){
-      errors <- c(errors, "Invalid h5 file")
-      return(errors)
-    }
-  )
-  
-  #validate obj is a seurat obj
- # if (!inherits(obj, "Seurat")){
-#    errors <- c(errors, "File is not a seurat object")
- #   return(errors)
-  #}
-  
-  return(obj)
-}
-
-
 create_metadata_umap <- function(obj, col){
   if (col %in% c("nCount_RNA", "nFeature_RNA", "percent.mt")){
     col_df <- data.frame(obj@reductions$umap@cell.embeddings, data = obj@meta.data[,col])
@@ -146,9 +115,11 @@ seurat_processing <- function(obj, qc1, qc2, qc3, norm){
   return(objfinal)
 }
 
-seurat_dimred <- function(obj){
-  #PCA
-  dimobj <- Seurat::RunPCA()
-  #tSNE
-  #UMAP
+
+
+########
+load_h5 <- function(obj){
+  obj <- Seurat::Read10X_h5(obj)
+  return(obj)
 }
+
