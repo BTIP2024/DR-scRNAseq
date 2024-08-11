@@ -141,8 +141,9 @@ seurat_processing <- function(obj, qc1, qc2, qc3, norm){
   all.genes <- rownames(obj)
   obj <- Seurat::ScaleData(obj, features = all.genes)
   obj <- Seurat::RunPCA(obj, features = VariableFeatures(object = obj))
-  
-  return(obj)
+  obj <- Seurat::RunTSNE(obj, dims = 1:10)
+  objfinal <- Seurat::RunUMAP(obj, dims = 1:10)
+  return(objfinal)
 }
 
 seurat_dimred <- function(obj){
