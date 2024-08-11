@@ -1,5 +1,4 @@
 library(shiny)
-
 library(shinydashboard)
 library(markdown)
 library(shinyjs)
@@ -134,8 +133,16 @@ create_feature_plot <- function(obj, gene) {
   return(FP)
 }
 
-seurat_processing <- function(obj){
+seurat_processing <- function(obj, qc1, qc2, qc3, norm){
   obj[["percent.mt"]] <- Seurat::PercentageFeatureSet(obj, pattern = "^MT-")
+  obj <- subset(obj, subset = nFeature_RNA > qc1 & nFeature_RNA < qc2 & percent.mt < qc3)
+  obj <- Seurat::NormalizeData(obj, normalization.method = norm)
+  obj <- Seurat::FindVariableFeatures(obj, selection.method = "vst", nfeatures = 2000)
+  all.genes <- rownames(obj)
+  obj <- Seurat::ScaleData(obj, features = all.genes)
+  obj <- Seurat::RunPCA(obj, features = VariableFeatures(object = obj))
+  
+  return(obj)
 }
 
 seurat_dimred <- function(obj){

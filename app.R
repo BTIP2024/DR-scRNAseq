@@ -35,19 +35,19 @@ ui <- dashboardPage(
                     actionButton("runanalyze", "Process", icon = icon("gears"), style = "color: #fff; background-color: #28a745; width: 87.25%")
                     ),          
                 div(
-                  textInput("label_input", "nCounts threshold:", value = " "),
+                  textInput("ncounts", "nCounts threshold:", value = "200"),
                   div(
                     id = "numericInputDiv",
                     uiOutput("numeric_input"))            
                    ),
                 div(
-                  textInput("label_input", "nFeatures threshold:", value = " "),
+                  textInput("nfeatures", "nFeatures threshold:", value = "2500"),
                   div(
                     id = "numericInputDiv",
                     uiOutput("numeric_input"))            
                    ),
                 div(
-                  textInput("label_input", "mt.counts threshold:", value = " "),
+                  textInput("mtcounts", "mt.counts threshold:", value = "5"),
                   div(
                     id = "numericInputDiv",
                     uiOutput("numeric_input"))            
@@ -55,10 +55,11 @@ ui <- dashboardPage(
                 div(
                   id = "dropdownDiv",
                   selectInput(
-                    inputId = "myDropdown",
+                    inputId = "norm",
                     label = "Normalization Method:",
                     choices = c("LogNormalize", "CLR", "RC")
-                  )
+                  ),
+                  downloadButton("download_drobj", "Download Seurat Object")
                   )          ),
                 
                 
@@ -156,6 +157,25 @@ server <- function(input, output, session){
       shinyjs::enable("runanalyze")
   } else {
     
+    #data processing
+    
+    ncounts <- as.numeric(input$ncounts)
+    nfeatures <- as.numeric(input$nfeatures)
+    mtcounts <- as.numeric(input$mtcounts)
+    dimred_obj <- seurat_processing(obj, ncounts, nfeatures, mtcounts, input$norm)
+    
+    #download
+    output$download_drobj <- downloadHandler(
+      filename = function(){
+        paste0('SeuratObj', '.rds')
+          },
+      content = function(file){
+        saveRDS(dimred_obj, file = file)
+          }
+        )
+    
+    remove_modal_spinner()
+    shinyjs::enable("runanalyze")
   }})
   
 #for plotting 
@@ -397,50 +417,50 @@ server <- function(input, output, session){
   
   
   
-  shinyDirChoose(
-    input,
-    'dir1',
-    roots = c(home = '~'),
-    filetypes = c('', 'mtx', "tsv", "csv", "bw")
-  )
+  # shinyDirChoose(
+  #   input,
+  #   'dir1',
+  #   roots = c(home = '~'),
+  #   filetypes = c('', 'mtx', "tsv", "csv", "bw")
+  # )
+  # 
+  # global <- reactiveValues(datapath = getwd())
+  # 
+  # dir1 <- reactive(input$dir1)
+  # 
+  # output$dir1 <- renderText({
+  #   global$datapath
+  # })
+  # 
+  # observeEvent(ignoreNULL = TRUE,
+  #              eventExpr = {
+  #                input$dir1
+  #              },
+  #              handlerExpr = {
+  #                if (!"path" %in% names(dir1())) return()
+  #                home <- normalizePath("~")
+  #                global$datapath <-
+  #                  file.path(home, paste(unlist(dir1()$path[-1]), collapse = .Platform$file.sep))
+  #              })
   
-  global <- reactiveValues(datapath = getwd())
-  
-  dir1 <- reactive(input$dir1)
-  
-  output$dir1 <- renderText({
-    global$datapath
-  })
-  
-  observeEvent(ignoreNULL = TRUE,
-               eventExpr = {
-                 input$dir1
-               },
-               handlerExpr = {
-                 if (!"path" %in% names(dir1())) return()
-                 home <- normalizePath("~")
-                 global$datapath <-
-                   file.path(home, paste(unlist(dir1()$path[-1]), collapse = .Platform$file.sep))
-               })
-  
-  observeEvent(input$convertdir, {
-    req(dir1())
-    shinyjs::disable("convertdir")
-    show_modal_spinner(text = "Processing...")
-    
-    count_data <- Read10X(dir1())
-    seurat_obj$data <- CreateSeuratObject(counts = count_data, project = "MySeuratObject")
-    remove_modal_spinner()
-    shinyjs::enable("convertdir")
-  })
-  
-  output$downloaddata <- downloadHandler(
-    filename = function() {
-      paste("seurat_object_", Sys.Date(), ".rds", sep = "")
-    },
-    content = function(file) {
-      saveRDS(seurat_obj$data, file = file)
-    })
+  # observeEvent(input$convertdir, {
+  #   req(dir1())
+  #   shinyjs::disable("convertdir")
+  #   show_modal_spinner(text = "Processing...")
+  #   
+  #   count_data <- Read10X(dir1())
+  #   seurat_obj$data <- CreateSeuratObject(counts = count_data, project = "MySeuratObject")
+  #   remove_modal_spinner()
+  #   shinyjs::enable("convertdir")
+  # })
+  # 
+  # output$downloaddata <- downloadHandler(
+  #   filename = function() {
+  #     paste("seurat_object_", Sys.Date(), ".rds", sep = "")
+  #   },
+  #   content = function(file) {
+  #     saveRDS(seurat_obj$data, file = file)
+  #   })
 }
 
 
