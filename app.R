@@ -30,9 +30,9 @@ ui <- dashboardPage(
                 
                 conditionalPanel(condition = "input.tab == 'analyze'",
                 div(
-                    fileInput("file", "Upload File", multiple = FALSE, accept = c(".rds")),
-                    actionButton("reset", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
-                    actionButton("run-analyze", "Process", icon = icon("gears"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                    fileInput("fileanalyze", "Upload File", multiple = FALSE, accept = c(".rds")),
+                    actionButton("resetanalyze", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
+                    actionButton("runanalyze", "Process", icon = icon("gears"), style = "color: #fff; background-color: #28a745; width: 87.25%")
                     ),          
                 div(
                   textInput("label_input", "nCounts threshold:", value = " "),
@@ -107,10 +107,10 @@ server <- function(input, output, session){
   
 #if a file is uploaded, run-analyze button will be available
   observe({
-    if (is.null(input$file) != TRUE){
-      shinyjs::enable("run-analyze")
+    if (is.null(input$fileanalyze) != TRUE){
+      shinyjs::enable("runanalyze")
     } else {
-      shinyjs::disable("run-analyze")
+      shinyjs::disable("runanalyze")
     }
   })
   
@@ -130,9 +130,9 @@ server <- function(input, output, session){
   })
   
 #if reset for run is clicked, run-analyze button will not be available
-  observeEvent(input$reset, {
-    shinyjs::reset("file")
-    shinyjs::disable("run-analyze")
+  observeEvent(input$resetanalyze, {
+    shinyjs::reset("fileanalyze")
+    shinyjs::disable("runanalyze")
   })
   
 #if reset for upload is clicked, upload button will not be available
@@ -140,16 +140,23 @@ server <- function(input, output, session){
     shinyjs::reset("fileupload")
     shinyjs::disable("convertupload")
   })
-  
-#input
- # output$numeric_input <- renderUI({
- #    numericInput(
- #      inputId = "numeric_input",
- #      label = input$label_input,
- #      value = 0
- #    )
- #  })
 
+#for analyzing
+  observeEvent(input$runanalyze,{
+    shinyjs::disable("runanalyze")
+    show_modal_spinner(text = "Processing the data...")
+    obj <- load_seurat_obj(input$fileanalyze$datapath)
+    
+    if (is.vector(obj)){
+      showModal(modalDialog(
+        title = "Error with file",
+        HTML("<h5>There is an error with the file you uploaded. See below for more details.</h5><br>",
+             paste(unlist(obj), collapse = "<br><br>"))
+      ))
+      shinyjs::enable("runanalyze")
+  } else {
+    
+  }})
   
 #for plotting 
   observeEvent(input$runplot, {
@@ -357,44 +364,7 @@ server <- function(input, output, session){
       }
       }
   })
-  
-#for converting to h5
-  # observeEvent(input$convertupload, {
-  #   shinyjs::disable("upload")
-  #   
-  #   show_modal_spinner(text = "Converting...")
-  #   h5 <- load_h5(input$upload$datapath)
-  #   if (is.vector(obj)){
-  #     showModal(modalDialog(
-  #       title = "Error with file",
-  #       HTML("<h5>There is an error with the file you uploaded. See below for more details.</h5><br>",
-  #            paste(unlist(obj), collapse = "<br><br>"))
-  #     ))
-  #     shinyjs::enable("run")
-  #     
-  #   } else {
-  #     
-  #     #h5 to seurat object
-  #     output$seuratobj <- h5
-  # 
-  #     
-  #     #download the rds file
-  #     output$download_seuratobj <- downloadHandler(
-  #       filename = function(){
-  #         paste0(input$metadata_col, '_SeuratObj', '.rds')
-  #       },
-  #       content = function(file){
-  #         saveRDS(seuratobj, file = file)
-  #       }
-  #     )
-  #     
-  #     
-  #     
-  #     remove_modal_spinner()
-  #     shinyjs::enable("convertupload") #stophere
-  #     
-  #   }
-  # })
+
   
   observeEvent(input$convertupload, {
     req(input$fileupload)
@@ -472,5 +442,46 @@ server <- function(input, output, session){
       saveRDS(seurat_obj$data, file = file)
     })
 }
+
+
+#######
+
+#for converting to h5
+# observeEvent(input$convertupload, {
+#   shinyjs::disable("upload")
+#   
+#   show_modal_spinner(text = "Converting...")
+#   h5 <- load_h5(input$upload$datapath)
+#   if (is.vector(obj)){
+#     showModal(modalDialog(
+#       title = "Error with file",
+#       HTML("<h5>There is an error with the file you uploaded. See below for more details.</h5><br>",
+#            paste(unlist(obj), collapse = "<br><br>"))
+#     ))
+#     shinyjs::enable("run")
+#     
+#   } else {
+#     
+#     #h5 to seurat object
+#     output$seuratobj <- h5
+# 
+#     
+#     #download the rds file
+#     output$download_seuratobj <- downloadHandler(
+#       filename = function(){
+#         paste0(input$metadata_col, '_SeuratObj', '.rds')
+#       },
+#       content = function(file){
+#         saveRDS(seuratobj, file = file)
+#       }
+#     )
+#     
+#     
+#     
+#     remove_modal_spinner()
+#     shinyjs::enable("convertupload") #stophere
+#     
+#   }
+# })
 
 shinyApp(ui, server)

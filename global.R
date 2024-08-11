@@ -122,7 +122,6 @@ create_metadata_tsne <- function(obj, col){
   return(tsne)
 }
 
-
 create_feature_plot <- function(obj, gene) {
   if (gene %in% rownames(obj)) {
     FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE)
@@ -133,4 +132,15 @@ create_feature_plot <- function(obj, gene) {
       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
   }
   return(FP)
+}
+
+seurat_processing <- function(obj){
+  obj[["percent.mt"]] <- Seurat::PercentageFeatureSet(obj, pattern = "^MT-")
+}
+
+seurat_dimred <- function(obj){
+  #PCA
+  dimobj <- Seurat::RunPCA()
+  #tSNE
+  #UMAP
 }
