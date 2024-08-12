@@ -389,33 +389,24 @@ server <- function(input, output, session){
   observeEvent(input$convertupload, {
     shinyjs::disable("convertupload")
     show_modal_spinner(text = "Converting...")
-    obj <- load_seurat_obj(input$fileupload$datapath)
-    
-    if (is.vector(obj)){
-      showModal(modalDialog(
-        title = "Error with file",
-        HTML("<h5>There is an error with the file you uploaded. See below for more details.</h5><br>",
-             paste(unlist(obj), collapse = "<br><br>"))
-      ))
-      shinyjs::enable("runupload")
-    } else {
+    #obj <- load_seurat_obj(input$fileupload$datapath)
+    converted_obj <- load_h5(input$fileupload$datapath)
       
-      converted_obj <- load_h5(obj)
       
-      #download
-      output$downloaddata <- downloadHandler(
-        filename = function(){
-          paste0('SeuratObj', '.rds')
-        },
-        content = function(file){
-          saveRDS(converted_obj, file = file)
-        }
+    #download
+    output$downloaddata <- downloadHandler(
+      filename = function(){
+        paste0('SeuratObjh5', '.rds')
+      },
+      content = function(file){
+        saveRDS(converted_obj, file = file)
+      }
       )
       
       remove_modal_spinner()
-      shinyjs::enable("runupload")
+      shinyjs::enable("convertupload")
       
-  }})
+  })
 
   
   # observeEvent(input$convertupload, {
