@@ -72,10 +72,10 @@ ui <- dashboardPage(
                 div(
                   h5(strong("Upload a folder")),
                   shinyDirButton("dir1", "Select data directory", "Upload"),
-                  verbatimTextOutput("dir1", placeholder = TRUE),
+                  verbatimTextOutput("dirpath", placeholder = TRUE),
                   actionButton("resetdir", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
                   actionButton("convertdir", "Convert", icon = icon("arrows-rotate"), style = "color: #fff; background-color: #28a745; width: 87.25%"),
-                  downloadButton("downloaddata", "Download Seurat Object")
+                  downloadButton("downloaddir", "Download Seurat Object")
                   )
                           )
                 )
@@ -389,7 +389,6 @@ server <- function(input, output, session){
   observeEvent(input$convertupload, {
     shinyjs::disable("convertupload")
     show_modal_spinner(text = "Converting...")
-    #obj <- load_seurat_obj(input$fileupload$datapath)
     converted_obj <- load_h5(input$fileupload$datapath)
       
       
@@ -408,26 +407,9 @@ server <- function(input, output, session){
       
   })
 
-  
-  # observeEvent(input$convertupload, {
-  #   req(input$fileupload)
-  #   shinyjs::disable("convertupload")
-  #   show_modal_spinner(text = "Converting...")
-  #   
-  #   coundata <- Seurat::Read10X_h5(input$fileupload$datapath)
-  #   seurat_obj$data <- Seurat::CreateSeuratObject(counts = count_data, project = "MySeuratObject")
-  #   output$downloadData <- downloadHandler(
-  #     filename = function() {
-  #       paste("seurat_object_", Sys.Date(), ".rds", sep = "")
-  #     },
-  #     content = function(file) {
-  #       saveRDS(seurat_obj$data, file = file)
-  #     }
-  #   )
-  # }
-  #             )
 
   
+   
 #clear all sidebar inputs when 'Reset' button is clicked for run
   observeEvent(input$resetplot, {
     shinyjs::reset("file")
@@ -438,15 +420,15 @@ server <- function(input, output, session){
     shinyjs::disable("run")
   })
   
+
+  roots <- c(home = normalizePath("~"))
+  shinyDirChoose(
+    input,
+    'dir1',
+    roots = roots,
+    filetypes = c('', 'mtx', "tsv", "csv")
+  )
   
-  
-  # shinyDirChoose(
-  #   input,
-  #   'dir1',
-  #   roots = c(home = '~'),
-  #   filetypes = c('', 'mtx', "tsv", "csv", "bw")
-  # )
-  # 
   # global <- reactiveValues(datapath = getwd())
   # 
   # dir1 <- reactive(input$dir1)
@@ -454,6 +436,36 @@ server <- function(input, output, session){
   # output$dir1 <- renderText({
   #   global$datapath
   # })
+  
+  output$dirpath <- renderPrint({
+    req(input$dir1)
+    dirpath <- parseDirPath(roots, input$dir1)
+    dirpath
+  })
+  
+  #dir <- reactive(parseDirPath(volumes, input$dir))
+  
+  #for uploading gz
+  observeEvent(input$convertdir, {
+    shinyjs::disable("convertdir")
+    show_modal_spinner(text = "Converting...")
+    selected_dir <- parseDirPath(roots, input$dir1)
+    obj <- load_gz(selected_dir)
+    
+    #download
+    output$downloaddir <- downloadHandler(
+      filename = function(){
+        paste0('SeuratObjh5', '.rds')
+      },
+      content = function(file){
+        saveRDS(obj, file = file)
+      }
+    )
+    
+    remove_modal_spinner()
+    shinyjs::enable("convertupload")
+  })
+  
   # 
   # observeEvent(ignoreNULL = TRUE,
   #              eventExpr = {
@@ -465,6 +477,10 @@ server <- function(input, output, session){
   #                global$datapath <-
   #                  file.path(home, paste(unlist(dir1()$path[-1]), collapse = .Platform$file.sep))
   #              })
+  
+  
+  
+  
   
   # observeEvent(input$convertdir, {
   #   req(dir1())

@@ -115,11 +115,14 @@ seurat_processing <- function(obj, qc1, qc2, qc3, norm){
   return(objfinal)
 }
 
-
-
-########
 load_h5 <- function(path){
   obj <- Seurat::Read10X_h5(path)
+  obj <- Seurat::CreateSeuratObject(obj)
+  return(obj)
+}
+
+load_gz <- function(path){
+  obj <- Seurat::Read10X(path)
   obj <- Seurat::CreateSeuratObject(obj)
   return(obj)
 }
