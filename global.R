@@ -136,7 +136,6 @@ load_gz <- function(path){
 
 create_metadata_pca_hover <- function(obj, col){
   if (col %in% colnames(obj@meta.data)) {
-    #pca <- DimPlot(obj, pt.size = .1, label = F, label.size = 4, group.by = col, reduction = "pca")
     pca <- DimPlot(obj, reduction = "pca", label = TRUE, group.by = col) + xlab("PCA 1") + ylab("PCA 2") + 
       theme(axis.title = element_text(size = 18)) +  
       guides(colour = guide_legend(override.aes = list(size = 10)))
@@ -151,31 +150,29 @@ create_metadata_pca_hover <- function(obj, col){
 
 create_metadata_umap_hover <- function(obj, col){
   if (col %in% colnames(obj@meta.data)) {
-    #pca <- DimPlot(obj, pt.size = .1, label = F, label.size = 4, group.by = col, reduction = "pca")
-    pca <- DimPlot(obj, reduction = "umap", label = TRUE, group.by = col) + xlab("UMAP 1") + ylab("UMAP 2") + 
+    umap <- DimPlot(obj, reduction = "umap", label = TRUE, group.by = col) + xlab("UMAP 1") + ylab("UMAP 2") + 
       theme(axis.title = element_text(size = 18)) +  
       guides(colour = guide_legend(override.aes = list(size = 10)))
   } else {
-    pca <- ggplot() +
+    umap <- ggplot() +
       theme_void() +
       geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
   }
-  ggplotly(pca)
+  ggplotly(umap)
 }
 
 create_metadata_tsne_hover <- function(obj, col){
   if (col %in% colnames(obj@meta.data)) {
-    #pca <- DimPlot(obj, pt.size = .1, label = F, label.size = 4, group.by = col, reduction = "pca")
-    pca <- DimPlot(obj, reduction = "tsne", label = TRUE, group.by = col) + xlab("UMAP 1") + ylab("UMAP 2") + 
+    tsne <- DimPlot(obj, reduction = "tsne", label = TRUE, group.by = col) + xlab("t-SNE 1") + ylab("t-SNE 2") + 
       theme(axis.title = element_text(size = 18)) +  
       guides(colour = guide_legend(override.aes = list(size = 10)))
   } else {
-    pca <- ggplot() +
+    tsne <- ggplot() +
       theme_void() +
       geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
   }
-  ggplotly(pca)
+  ggplotly(tsne)
 }
 
