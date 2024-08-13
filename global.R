@@ -5,6 +5,7 @@ library(shinyjs)
 library(shinybusy)
 library(Seurat)
 library(ggplot2)
+library(plotly)
 library(tools)
 library(dplyr)
 library(DT)
@@ -110,6 +111,12 @@ seurat_processing <- function(obj, qc1, qc2, qc3, norm){
   all.genes <- rownames(obj)
   obj <- Seurat::ScaleData(obj, features = all.genes)
   obj <- Seurat::RunPCA(obj, features = VariableFeatures(object = obj))
+  obj <- Seurat::FindNeighbors(obj, dims = 1:10)
+  obj <- Seurat::FindClusters(obj, resolution = 0.5)
+  new.cluster.ids <- c("Naive CD4 T", "CD14+ Mono", "Memory CD4 T", "B", "CD8 T", "FCGR3A+ Mono", "NK", "DC", "Platelet")
+  names(new.cluster.ids) <- levels(obj)
+  obj <- RenameIdents(obj, new.cluster.ids)
+  obj$cell_type = Idents(obj)
   obj <- Seurat::RunTSNE(obj, dims = 1:10)
   objfinal <- Seurat::RunUMAP(obj, dims = 1:10)
   return(objfinal)
@@ -125,5 +132,50 @@ load_gz <- function(path){
   obj <- Seurat::Read10X(path)
   obj <- Seurat::CreateSeuratObject(obj)
   return(obj)
+}
+
+create_metadata_pca_hover <- function(obj, col){
+  if (col %in% colnames(obj@meta.data)) {
+    #pca <- DimPlot(obj, pt.size = .1, label = F, label.size = 4, group.by = col, reduction = "pca")
+    pca <- DimPlot(obj, reduction = "pca", label = TRUE, group.by = col) + xlab("PCA 1") + ylab("PCA 2") + 
+      theme(axis.title = element_text(size = 18)) +  
+      guides(colour = guide_legend(override.aes = list(size = 10)))
+  } else {
+    pca <- ggplot() +
+      theme_void() +
+      geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
+      theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  }
+  ggplotly(pca)
+}
+
+create_metadata_umap_hover <- function(obj, col){
+  if (col %in% colnames(obj@meta.data)) {
+    #pca <- DimPlot(obj, pt.size = .1, label = F, label.size = 4, group.by = col, reduction = "pca")
+    pca <- DimPlot(obj, reduction = "umap", label = TRUE, group.by = col) + xlab("UMAP 1") + ylab("UMAP 2") + 
+      theme(axis.title = element_text(size = 18)) +  
+      guides(colour = guide_legend(override.aes = list(size = 10)))
+  } else {
+    pca <- ggplot() +
+      theme_void() +
+      geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
+      theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  }
+  ggplotly(pca)
+}
+
+create_metadata_tsne_hover <- function(obj, col){
+  if (col %in% colnames(obj@meta.data)) {
+    #pca <- DimPlot(obj, pt.size = .1, label = F, label.size = 4, group.by = col, reduction = "pca")
+    pca <- DimPlot(obj, reduction = "tsne", label = TRUE, group.by = col) + xlab("UMAP 1") + ylab("UMAP 2") + 
+      theme(axis.title = element_text(size = 18)) +  
+      guides(colour = guide_legend(override.aes = list(size = 10)))
+  } else {
+    pca <- ggplot() +
+      theme_void() +
+      geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
+      theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  }
+  ggplotly(pca)
 }
 

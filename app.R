@@ -211,9 +211,9 @@ server <- function(input, output, session){
       
       #for UMAP
       if (input$dimplot == "UMAP"){
-      output$umap <- renderPlot({
+      output$umap <- renderPlotly({
         if (!is.null(input$metadata_col)) {
-          create_metadata_umap(obj, input$metadata_col)
+          create_metadata_umap_hover(obj, input$metadata_col)
         }
       })
       
@@ -230,14 +230,15 @@ server <- function(input, output, session){
           fluidRow(
             column(
               width = 8,
-              plotOutput(outputId = 'umap'),
+              plotlyOutput(outputId = 'umap'),
               downloadButton("download_umap", "Download UMAP")
             ),
             column(
               width = 4,
               selectizeInput("metadata_col", 
                              "Metadata Column", 
-                             colnames(obj@meta.data)
+                             colnames(obj@meta.data),
+                             selected = "cell_type"
               )
             )
           ),
@@ -274,9 +275,9 @@ server <- function(input, output, session){
       
       #for PCA
       else if (input$dimplot == "PCA"){
-        output$pca <- renderPlot({
+        output$pca <- renderPlotly({
           if (!is.null(input$metadata_col)) {
-            create_metadata_pca(obj, input$metadata_col)
+            create_metadata_pca_hover(obj, input$metadata_col)
           }
         })
         
@@ -293,14 +294,15 @@ server <- function(input, output, session){
             fluidRow(
               column(
                 width = 8,
-                plotOutput(outputId = 'pca'),
+                plotlyOutput(outputId = 'pca'),
                 downloadButton("download_pca", "Download PCA")
               ),
               column(
                 width = 4,
                 selectizeInput("metadata_col", 
                                "Metadata Column", 
-                               colnames(obj@meta.data)
+                               colnames(obj@meta.data),
+                               selected = "cell_type"
                 )
               )
             ),
@@ -337,9 +339,9 @@ server <- function(input, output, session){
       
       #for t-SNE
       else if (input$dimplot == "t-SNE"){
-        output$tsne <- renderPlot({
+        output$tsne <- renderPlotly({
           if (!is.null(input$metadata_col)) {
-            create_metadata_tsne(obj, input$metadata_col)
+            create_metadata_tsne_hover(obj, input$metadata_col)
           }
         })
         
@@ -356,14 +358,15 @@ server <- function(input, output, session){
             fluidRow(
               column(
                 width = 8,
-                plotOutput(outputId = 'tsne'),
+                plotlyOutput(outputId = 'tsne'),
                 downloadButton("download_tsne", "Download t-SNE")
               ),
               column(
                 width = 4,
                 selectizeInput("metadata_col", 
                                "Metadata Column", 
-                               colnames(obj@meta.data)
+                               colnames(obj@meta.data),
+                               selected = "cell_type"
                 )
               )
             ),
