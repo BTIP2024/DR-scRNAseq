@@ -40,9 +40,33 @@ load_seurat_obj <- function(path){
   return(obj)
 }
 
-create_feature_plot <- function(obj, gene) {
+create_feature_plot_pca <- function(obj, gene) {
   if (gene %in% rownames(obj)) {
-    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE)
+    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 10, combine = FALSE, reduction = "pca")
+  } else {
+    FP <- ggplot() +
+      theme_void() + 
+      geom_text(aes(x = 0.5, y = 0.5, label = "Gene doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
+      theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  }
+  return(FP)
+}
+
+create_feature_plot_tsne <- function(obj, gene) {
+  if (gene %in% rownames(obj)) {
+    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE, reduction = "tsne")
+  } else {
+    FP <- ggplot() +
+      theme_void() + 
+      geom_text(aes(x = 0.5, y = 0.5, label = "Gene doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
+      theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+  }
+  return(FP)
+}
+
+create_feature_plot_umap <- function(obj, gene) {
+  if (gene %in% rownames(obj)) {
+    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE, reduction = "umap")
   } else {
     FP <- ggplot() +
       theme_void() + 
@@ -124,4 +148,16 @@ create_metadata_tsne_hover <- function(obj, col){
   }
   ggplotly(tsne)
 }
+
+# create_feature_plot_tsne_hover <- function(obj, gene) {
+#   if (gene %in% rownames(obj)) {
+#     FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE)
+#   } else {
+#     FP <- ggplot() +
+#       theme_void() + 
+#       geom_text(aes(x = 0.5, y = 0.5, label = "Gene doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
+#       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
+#   }
+#   return(FP)
+# }
 

@@ -219,7 +219,7 @@ server <- function(input, output, session){
       
       output$featurePlotUMAP <- renderPlot({
         if (!is.null(input$gene)) {
-          create_feature_plot(obj, input$gene)
+          create_feature_plot_umap(obj, input$gene)
         }
       })
       
@@ -283,7 +283,7 @@ server <- function(input, output, session){
         
         output$featurePlotPCA <- renderPlot({
           if (!is.null(input$gene)) {
-            create_feature_plot(obj, input$gene)
+            create_feature_plot_pca(obj, input$gene)
           }
         })
         
@@ -347,7 +347,7 @@ server <- function(input, output, session){
         
         output$featurePlotTSNE <- renderPlot({
           if (!is.null(input$gene)) {
-            create_feature_plot(obj, input$gene)
+            create_feature_plot_tsne(obj, input$gene)
           }
         })
         
