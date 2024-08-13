@@ -67,7 +67,8 @@ ui <- dashboardPage(
                 div(
                     fileInput("fileupload", "Upload h5 File", multiple = FALSE, accept = c(".h5", ".h5ad")),
                     actionButton("resetupload", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
-                    actionButton("convertupload", "Convert", icon = icon("arrows-rotate"), style = "color: #fff; background-color: #28a745; width: 87.25%")
+                    actionButton("convertupload", "Convert", icon = icon("arrows-rotate"), style = "color: #fff; background-color: #28a745; width: 87.25%"),
+                    downloadButton("downloaddata", "Download Seurat Object")
                     ),
                 div(
                   h5(strong("Upload a folder")),
@@ -85,7 +86,21 @@ ui <- dashboardPage(
       tabItem(tabName = "home",
               tabsetPanel(id = "main_tabs",
                           tabPanel("Instructions", 
-                                   includeMarkdown("instructions.Rmd")
+                                   includeMarkdown("instructions.Rmd"),
+                                   conditionalPanel(condition = "input.tab == 'upload'",
+                                      tags$a(
+                                        href = "https://drive.google.com/uc?export=download&id=1l1iFIx05iu_5pHw1ciWrhogPdpk0L9K5",  # The URL you want to link to
+                                        class = "btn btn-primary",        # Bootstrap button classes
+                                        "Download sample h5 file"                    # Button text
+                                      ),
+                                      tags$a(
+                                        href = "https://drive.google.com/uc?export=download&id=17IRibxal4LdWzfJKbJpCNk4RqHyLx9x9",  # The URL you want to link to
+                                        class = "btn btn-primary",        # Bootstrap button classes
+                                        "Download sample folder"                    # Button text
+                                      )
+                                   )
+                                  
+                                   
                         ))
               )
             )
@@ -429,13 +444,6 @@ server <- function(input, output, session){
     filetypes = c('', 'mtx', "tsv", "csv")
   )
   
-  # global <- reactiveValues(datapath = getwd())
-  # 
-  # dir1 <- reactive(input$dir1)
-  # 
-  # output$dir1 <- renderText({
-  #   global$datapath
-  # })
   
   output$dirpath <- renderPrint({
     req(input$dir1)
@@ -443,7 +451,6 @@ server <- function(input, output, session){
     dirpath
   })
   
-  #dir <- reactive(parseDirPath(volumes, input$dir))
   
   #for uploading gz
   observeEvent(input$convertdir, {
@@ -466,81 +473,7 @@ server <- function(input, output, session){
     shinyjs::enable("convertupload")
   })
   
-  # 
-  # observeEvent(ignoreNULL = TRUE,
-  #              eventExpr = {
-  #                input$dir1
-  #              },
-  #              handlerExpr = {
-  #                if (!"path" %in% names(dir1())) return()
-  #                home <- normalizePath("~")
-  #                global$datapath <-
-  #                  file.path(home, paste(unlist(dir1()$path[-1]), collapse = .Platform$file.sep))
-  #              })
   
-  
-  
-  
-  
-  # observeEvent(input$convertdir, {
-  #   req(dir1())
-  #   shinyjs::disable("convertdir")
-  #   show_modal_spinner(text = "Processing...")
-  #   
-  #   count_data <- Read10X(dir1())
-  #   seurat_obj$data <- CreateSeuratObject(counts = count_data, project = "MySeuratObject")
-  #   remove_modal_spinner()
-  #   shinyjs::enable("convertdir")
-  # })
-  # 
-  # output$downloaddata <- downloadHandler(
-  #   filename = function() {
-  #     paste("seurat_object_", Sys.Date(), ".rds", sep = "")
-  #   },
-  #   content = function(file) {
-  #     saveRDS(seurat_obj$data, file = file)
-  #   })
 }
-
-
-#######
-
-#for converting to h5
-# observeEvent(input$convertupload, {
-#   shinyjs::disable("upload")
-#   
-#   show_modal_spinner(text = "Converting...")
-#   h5 <- load_h5(input$upload$datapath)
-#   if (is.vector(obj)){
-#     showModal(modalDialog(
-#       title = "Error with file",
-#       HTML("<h5>There is an error with the file you uploaded. See below for more details.</h5><br>",
-#            paste(unlist(obj), collapse = "<br><br>"))
-#     ))
-#     shinyjs::enable("run")
-#     
-#   } else {
-#     
-#     #h5 to seurat object
-#     output$seuratobj <- h5
-# 
-#     
-#     #download the rds file
-#     output$download_seuratobj <- downloadHandler(
-#       filename = function(){
-#         paste0(input$metadata_col, '_SeuratObj', '.rds')
-#       },
-#       content = function(file){
-#         saveRDS(seuratobj, file = file)
-#       }
-#     )
-#     
-#     
-#     
-#     remove_modal_spinner()
-#     shinyjs::enable("convertupload") #stophere
-#     
-#   }
-# })
 
 shinyApp(ui, server)
