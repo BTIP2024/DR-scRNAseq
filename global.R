@@ -42,7 +42,7 @@ load_seurat_obj <- function(path){
 
 create_feature_plot_pca <- function(obj, gene) {
   if (gene %in% rownames(obj)) {
-    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 10, combine = FALSE, reduction = "pca")
+    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.1, combine = FALSE, reduction = "pca")
   } else {
     FP <- ggplot() +
       theme_void() + 
@@ -147,6 +147,59 @@ create_metadata_tsne_hover <- function(obj, col){
       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
   }
   ggplotly(tsne)
+}
+
+create_metadata_pca_3d <- function(obj, col){
+  plotting.data <- FetchData(object = obj, vars = c("PC_1", "PC_2", "PC_3", "seurat_clusters"))
+  plot_ly(data = plotting.data, x = ~PC_1, y = ~PC_2, z = ~PC_3, color = ~seurat_clusters,
+          type = "scatter3d", mode = "markers")
+}
+
+create_metadata_tsne_3d <- function(obj, col){
+  obj <- RunTSNE(obj, dims = 1:10, dim.embed = 3)
+  
+  # Extract tSNE information from Seurat Object
+  tsne_1 <- obj[["tsne"]]@cell.embeddings[,1]
+  tsne_2 <- obj[["tsne"]]@cell.embeddings[,2]
+  tsne_3 <- obj[["tsne"]]@cell.embeddings[,3]
+  
+  # Prepare a dataframe for cell plotting
+  plot.data <- FetchData(object = obj, vars = c("tSNE_1", "tSNE_2", "tSNE_3", "seurat_clusters"))
+  
+  # Make a column of row name identities (these will be your cell/barcode names)
+  plot.data$label <- paste(rownames(plot.data))
+  
+  # Plot your data, in this example my Seurat object had 21 clusters (0-20)
+  plot_ly(data = plot.data, 
+          x = ~tSNE_1, y = ~tSNE_2, z = ~tSNE_3, 
+          color = ~seurat_clusters, 
+          type = "scatter3d", 
+          mode = "markers", 
+          marker = list(size = 5, width=2), # controls size of points
+          text=~label, #This is that extra column we made earlier for which we will use
+          hoverinfo="text")
+}
+
+create_metadata_umap_3d <- function(obj, col){
+  obj <- RunUMAP(obj, dims = 1:10, n.components = 3L)
+  
+  #Embeddings(object = pbmc, reduction = "umap")
+  
+  # Prepare a dataframe for cell plotting
+  plot.data <- FetchData(object = obj, vars = c("umap_1", "umap_2", "umap_3", "seurat_clusters"))
+  
+  # Make a column of row name identities (these will be your cell/barcode names)
+  plot.data$label <- paste(rownames(plot.data))
+  
+  # Plot your data, in this example my Seurat object had 21 clusters (0-20)
+  plot_ly(data = plot.data, 
+                 x = ~umap_1, y = ~umap_2, z = ~umap_3, 
+                 color = ~seurat_clusters, 
+                 type = "scatter3d", 
+                 mode = "markers", 
+                 marker = list(size = 5, width=2), # controls size of points
+                 text=~label, #This is that extra column we made earlier for which we will use for cell ID
+                 hoverinfo="text")
 }
 
 # create_feature_plot_tsne_hover <- function(obj, gene) {

@@ -217,6 +217,12 @@ server <- function(input, output, session){
         }
       })
       
+      output$umap3d <- renderPlotly({
+        if (!is.null(input$metadata_col)) {
+          create_metadata_umap_3d(obj, input$metadata_col)
+        }
+      })
+      
       output$featurePlotUMAP <- renderPlot({
         if (!is.null(input$gene)) {
           create_feature_plot_umap(obj, input$gene)
@@ -226,7 +232,7 @@ server <- function(input, output, session){
       insertTab(
         inputId = "main_tabs",
         tabPanel(
-          "UMAP",
+          "2D UMAP",
           fluidRow(
             column(
               width = 8,
@@ -246,6 +252,31 @@ server <- function(input, output, session){
         ),
         select = TRUE
       )
+      
+      insertTab(
+        inputId = "main_tabs",
+        tabPanel(
+          "3D UMAP",
+          fluidRow(
+            column(
+              width = 8,
+              plotlyOutput(outputId = 'umap3d'),
+              downloadButton("download_umap", "Download UMAP")
+            ),
+            column(
+              width = 4,
+              selectizeInput("metadata_col", 
+                             "Metadata Column", 
+                             colnames(obj@meta.data),
+                             selected = "cell_type"
+              )
+            )
+          ),
+          style = "height: 90%; width: 95%; padding-top: 5%;"
+        ),
+        select = TRUE
+      )
+      
       insertTab(
         inputId = "main_tabs",
         tabPanel(
@@ -260,7 +291,8 @@ server <- function(input, output, session){
               width = 4,
               selectizeInput("gene", 
                              "Genes", 
-                             rownames(obj)
+                             rownames(obj),
+                             selected = "ISG15"
               )
             )
           ),
@@ -281,6 +313,12 @@ server <- function(input, output, session){
           }
         })
         
+        output$pca3d <- renderPlotly({
+          if (!is.null(input$metadata_col)) {
+            create_metadata_pca_3d(obj, input$metadata_col)
+          }
+        })
+        
         output$featurePlotPCA <- renderPlot({
           if (!is.null(input$gene)) {
             create_feature_plot_pca(obj, input$gene)
@@ -290,7 +328,7 @@ server <- function(input, output, session){
         insertTab(
           inputId = "main_tabs",
           tabPanel(
-            "PCA",
+            "2D PCA",
             fluidRow(
               column(
                 width = 8,
@@ -310,6 +348,31 @@ server <- function(input, output, session){
           ),
           select = TRUE
         )
+        
+        insertTab(
+          inputId = "main_tabs",
+          tabPanel(
+            "3D PCA",
+            fluidRow(
+              column(
+                width = 8,
+                plotlyOutput(outputId = 'pca3d'),
+                downloadButton("download_pca", "Download PCA")
+              ),
+              column(
+                width = 4,
+                selectizeInput("metadata_col", 
+                               "Metadata Column", 
+                               colnames(obj@meta.data),
+                               selected = "cell_type"
+                )
+              )
+            ),
+            style = "height: 90%; width: 95%; padding-top: 5%;"
+          ),
+          select = TRUE
+        )
+        
         insertTab(
           inputId = "main_tabs",
           tabPanel(
@@ -324,7 +387,8 @@ server <- function(input, output, session){
                 width = 4,
                 selectizeInput("gene", 
                                "Genes", 
-                               rownames(obj)
+                               rownames(obj),
+                               selected = "ISG15"
                 )
               )
             ),
@@ -345,6 +409,12 @@ server <- function(input, output, session){
           }
         })
         
+        output$tsne3d <- renderPlotly({
+          if (!is.null(input$metadata_col)) {
+            create_metadata_tsne_3d(obj, input$metadata_col)
+          }
+        })
+        
         output$featurePlotTSNE <- renderPlot({
           if (!is.null(input$gene)) {
             create_feature_plot_tsne(obj, input$gene)
@@ -354,7 +424,7 @@ server <- function(input, output, session){
         insertTab(
           inputId = "main_tabs",
           tabPanel(
-            "t-SNE",
+            "2D t-SNE",
             fluidRow(
               column(
                 width = 8,
@@ -374,6 +444,31 @@ server <- function(input, output, session){
           ),
           select = TRUE
         )
+        
+        insertTab(
+          inputId = "main_tabs",
+          tabPanel(
+            "3D t-SNE",
+            fluidRow(
+              column(
+                width = 8,
+                plotlyOutput(outputId = 'tsne3d'),
+                downloadButton("download_tsne", "Download t-SNE")
+              ),
+              column(
+                width = 4,
+                selectizeInput("metadata_col", 
+                               "Metadata Column", 
+                               colnames(obj@meta.data),
+                               selected = "cell_type"
+                )
+              )
+            ),
+            style = "height: 90%; width: 95%; padding-top: 5%;"
+          ),
+          select = TRUE
+        )
+        
         insertTab(
           inputId = "main_tabs",
           tabPanel(
@@ -388,7 +483,8 @@ server <- function(input, output, session){
                 width = 4,
                 selectizeInput("gene", 
                                "Genes", 
-                               rownames(obj)
+                               rownames(obj),
+                               selected = "ISG15"
                 )
               )
             ),
@@ -402,6 +498,18 @@ server <- function(input, output, session){
       }
       }
   })
+  
+  
+  ###############
+  output$download_umap <- downloadHandler(
+    filename = function(){
+      "myplot.png"
+    },
+    content = function(file){
+      save_image(output$umap, file)
+    }
+  )
+  ##############
   
 #for uploading h5
   observeEvent(input$convertupload, {
@@ -475,6 +583,8 @@ server <- function(input, output, session){
     remove_modal_spinner()
     shinyjs::enable("convertupload")
   })
+  
+  
   
   
 }
