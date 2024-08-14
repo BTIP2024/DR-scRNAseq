@@ -42,7 +42,7 @@ load_seurat_obj <- function(path){
 
 create_feature_plot_pca <- function(obj, gene) {
   if (gene %in% rownames(obj)) {
-    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.1, combine = FALSE, reduction = "pca")
+    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.85, combine = FALSE, reduction = "pca")
   } else {
     FP <- ggplot() +
       theme_void() + 
@@ -54,7 +54,7 @@ create_feature_plot_pca <- function(obj, gene) {
 
 create_feature_plot_tsne <- function(obj, gene) {
   if (gene %in% rownames(obj)) {
-    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE, reduction = "tsne")
+    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.85, combine = FALSE, reduction = "tsne")
   } else {
     FP <- ggplot() +
       theme_void() + 
@@ -66,7 +66,7 @@ create_feature_plot_tsne <- function(obj, gene) {
 
 create_feature_plot_umap <- function(obj, gene) {
   if (gene %in% rownames(obj)) {
-    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.001, combine = FALSE, reduction = "umap")
+    FP <- Seurat::FeaturePlot(obj, features = gene, pt.size = 0.85, combine = FALSE, reduction = "umap")
   } else {
     FP <- ggplot() +
       theme_void() + 
