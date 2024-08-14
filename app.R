@@ -4,7 +4,12 @@ library("shinyFiles")
 
 
 ui <- dashboardPage(
-  dashboardHeader(title = 'DR-scRNAseq'),
+  dashboardHeader(
+    title = tagList(
+      tags$img(src = 'https://www.freeiconspng.com/uploads/black-and-dna-image-0.png', height = '30px', style = "display: inline-block; vertical-align: center;"), 
+      tags$span("DR-scRNAseq", 
+                style = "font-family: Arial, sans-serif; font-size: 24px; color: #ffffff; vertical-align: middle; padding-left: 0px;")
+    )),
   dashboardSidebar(
     sidebarMenu(id="tab",
                 useShinyjs(),
@@ -207,7 +212,9 @@ server <- function(input, output, session){
         paste0('SeuratObj', '.rds')
           },
       content = function(file){
+        show_modal_spinner(text = "Downloading...")
         saveRDS(dimred_obj, file = file)
+        remove_modal_spinner()
           }
         )
     
@@ -333,8 +340,10 @@ server <- function(input, output, session){
         content = function(file){
           #p <- create_metadata_umap_hover(obj, input$metadata_col)$x$attrs[[1]]$plot
           #ggsave(filename = file, plot = p, device = "png")
+          show_modal_spinner(text = "Downloading...")
           plot_data <- create_metadata_umap_hover(obj, input$metadata_col)
           ggsave(filename = file, plot = plot_data$ggplot, device = "png")
+          remove_modal_spinner()
         }
       )
       ##############
@@ -442,8 +451,10 @@ server <- function(input, output, session){
           content = function(file){
             #p <- create_metadata_umap_hover(obj, input$metadata_col)$x$attrs[[1]]$plot
             #ggsave(filename = file, plot = p, device = "png")
+            show_modal_spinner(text = "Downloading...")
             plot_data <- create_metadata_pca_hover(obj, input$metadata_col)
             ggsave(filename = file, plot = plot_data$ggplot, device = "png")
+            remove_modal_spinner()
           }
         )
         ##############
@@ -551,8 +562,10 @@ server <- function(input, output, session){
           content = function(file){
             #p <- create_metadata_umap_hover(obj, input$metadata_col)$x$attrs[[1]]$plot
             #ggsave(filename = file, plot = p, device = "png")
+            show_modal_spinner(text = "Downloading...")
             plot_data <- create_metadata_tsne_hover(obj, input$metadata_col)
             ggsave(filename = file, plot = plot_data$ggplot, device = "png")
+            remove_modal_spinner()
           }
         )
         ##############
@@ -579,7 +592,9 @@ server <- function(input, output, session){
         paste0('SeuratObjh5', '.rds')
       },
       content = function(file){
+        show_modal_spinner(text = "Downloading...")
         saveRDS(converted_obj, file = file)
+        remove_modal_spinner()
       }
       )
       
@@ -629,7 +644,9 @@ server <- function(input, output, session){
         paste0('SeuratObjh5', '.rds')
       },
       content = function(file){
+        show_modal_spinner(text = "Downloading...")
         saveRDS(obj, file = file)
+        remove_modal_spinner()
       }
     )
     
