@@ -108,7 +108,7 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output, session){
-  options(shiny.maxRequestSize = 300*1024^2)
+  options(shiny.maxRequestSize = 1024*1024^2) #1GB cap
   
   shinyjs::disable("runplot")
   
