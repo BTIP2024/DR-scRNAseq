@@ -1,6 +1,10 @@
-# Welcome to DR-scRNAseq!
+<div style="font-family: 'Arial', sans-serif; color: #2c3e50;">
+  <h1 style="font-size: 36px; font-weight: bold; margin-bottom: 20px;">Welcome to DR-scRNAseq!</h1>
+  <p style="font-size: 18px; margin-bottom: 20px;">
+    Follow these steps to process and analyze your single-cell RNA sequencing data.
+  </p>
+</div>
 
-### To use this app:
 
 -   Generate your Seurat object using **Upload and Convert**
     - Upload your .h5 or .gz file
@@ -15,3 +19,5 @@
     - Press the `Run` button to execute the dimensionality reduction and create the plots
     - 2 tabs will appear with data that you can explore
     - There will be option to download your plots
+
+
