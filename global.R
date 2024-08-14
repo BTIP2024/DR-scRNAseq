@@ -108,7 +108,13 @@ load_gz <- function(path){
 }
 
 create_metadata_pca_hover <- function(obj, col){
-  if (col %in% colnames(obj@meta.data)) {
+  if (col %in% c("nCount_RNA", "nFeature_RNA", "percent.mt")){
+    col_df <- data.frame(obj@reductions$pca@cell.embeddings, data = obj@meta.data[,col])
+    pca <- ggplot(data = col_df) +
+      geom_point(mapping = aes(PC_1, PC_2, color = log10(data)), size = 0.5) +
+      scale_colour_gradientn(colours = rainbow(7))
+  }
+  else if (col %in% colnames(obj@meta.data)) {
     pca <- DimPlot(obj, reduction = "pca", label = TRUE, group.by = col) + xlab("PCA 1") + ylab("PCA 2") + 
       theme(axis.title = element_text(size = 18)) +  
       guides(colour = guide_legend(override.aes = list(size = 10)))
@@ -123,7 +129,13 @@ create_metadata_pca_hover <- function(obj, col){
 }
 
 create_metadata_umap_hover <- function(obj, col){
-  if (col %in% colnames(obj@meta.data)) {
+  if (col %in% c("nCount_RNA", "nFeature_RNA", "percent.mt")){
+    col_df <- data.frame(obj@reductions$umap@cell.embeddings, data = obj@meta.data[,col])
+    umap <- ggplot(data = col_df) +
+      geom_point(mapping = aes(umap_1, umap_2, color = log10(data)), size = 0.5) +
+      scale_colour_gradientn(colours = rainbow(7))
+  }
+  else if (col %in% colnames(obj@meta.data)) {
     umap <- DimPlot(obj, reduction = "umap", label = TRUE, group.by = col) + xlab("UMAP 1") + ylab("UMAP 2") + 
       theme(axis.title = element_text(size = 18)) +  
       guides(colour = guide_legend(override.aes = list(size = 10)))
@@ -138,7 +150,13 @@ create_metadata_umap_hover <- function(obj, col){
 }
 
 create_metadata_tsne_hover <- function(obj, col){
-  if (col %in% colnames(obj@meta.data)) {
+  if (col %in% c("nCount_RNA", "nFeature_RNA", "percent.mt")){
+    col_df <- data.frame(obj@reductions$tsne@cell.embeddings, data = obj@meta.data[,col])
+    tsne <- ggplot(data = col_df) +
+      geom_point(mapping = aes(tSNE_1, tSNE_2, color = log10(data)), size = 0.5) +
+      scale_colour_gradientn(colours = rainbow(7))
+  }
+  else if (col %in% colnames(obj@meta.data)) {
     tsne <- DimPlot(obj, reduction = "tsne", label = TRUE, group.by = col) + xlab("t-SNE 1") + ylab("t-SNE 2") + 
       theme(axis.title = element_text(size = 18)) +  
       guides(colour = guide_legend(override.aes = list(size = 10)))

@@ -566,8 +566,6 @@ server <- function(input, output, session){
       
   })
 
-
-  
    
 #clear all sidebar inputs when 'Reset' button is clicked for run
   observeEvent(input$resetplot, {
