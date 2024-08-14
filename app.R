@@ -59,8 +59,14 @@ ui <- dashboardPage(
                     label = "Normalization Method:",
                     choices = c("LogNormalize", "CLR", "RC")
                   ),
-                  downloadButton("download_drobj", "Download Seurat Object")
+                  #downloadButton("download_drobj", "Download Seurat Object")
+                  div(
+                    style = "text-align: center; margin-top: 20px;",
+                    downloadButton("download_drobj", "Download Seurat Object", style = "color: #ffffff; background-color: #007bff; border-color: #007bff;")
+                  )
                   )          ),
+                
+                
                 
                 
                 conditionalPanel(condition = "input.tab == 'upload'",
@@ -68,16 +74,32 @@ ui <- dashboardPage(
                     fileInput("fileupload", "Upload h5 File", multiple = FALSE, accept = c(".h5", ".h5ad")),
                     actionButton("resetupload", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
                     actionButton("convertupload", "Convert", icon = icon("arrows-rotate"), style = "color: #fff; background-color: #28a745; width: 87.25%"),
-                    downloadButton("downloaddata", "Download Seurat Object")
+                    #downloadButton("downloaddata", "Download Seurat Object")
                     ),
                 div(
-                  h5(strong("Upload a folder")),
+                  style = "text-align: center; margin-top: 20px;",
+                  downloadButton("downloaddata", "Download Seurat Object", style = "color: #ffffff; background-color: #007bff; border-color: #007bff;")
+                ),
+                div(
+                  style = "text-align: left; margin-top: 50px; margin-left: 10px;",
+                  h5(strong("Upload a folder"))),
+                div(
                   shinyDirButton("dir1", "Select data directory", "Upload"),
-                  verbatimTextOutput("dirpath", placeholder = TRUE),
+                  div(
+                    style = "margin: 10px auto; width: 85%; background-color: #f8f9fa; border: 2px solid #dee2e6; padding: 5px; border-radius: 2px;",
+                    verbatimTextOutput("dirpath", placeholder = TRUE)
+                  )
+                ),
+                div(
+                  style = "text-align: left; margin-top: 40px;",
                   actionButton("resetdir", "Reset", icon = icon("undo"), style = "color: #fff; background-color: #dc3545; width: 87.25%"),
                   actionButton("convertdir", "Convert", icon = icon("arrows-rotate"), style = "color: #fff; background-color: #28a745; width: 87.25%"),
-                  downloadButton("downloaddir", "Download Seurat Object")
-                  )
+                  #downloadButton("downloaddir", "Download Seurat Object")
+                  ),
+                div(
+                  style = "text-align: center; margin-top: 20px;",
+                  downloadButton("downloaddir", "Download Seurat Object", style = "color: #ffffff; background-color: #007bff; border-color: #007bff;")
+                )
                           )
                 )
   ),
