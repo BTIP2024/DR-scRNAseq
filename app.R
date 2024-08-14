@@ -213,13 +213,14 @@ server <- function(input, output, session){
       if (input$dimplot == "UMAP"){
       output$umap <- renderPlotly({
         if (!is.null(input$metadata_col)) {
-          create_metadata_umap_hover(obj, input$metadata_col)
+          #create_metadata_umap_hover(obj, input$metadata_col)
+          create_metadata_umap_hover(obj, input$metadata_col)$plotly
         }
       })
       
       output$umap3d <- renderPlotly({
         if (!is.null(input$metadata_col)) {
-          create_metadata_umap_3d(obj, input$metadata_col)
+          create_metadata_umap_3d(obj, input$metadata_col)$plotly
         }
       })
       
@@ -237,7 +238,7 @@ server <- function(input, output, session){
             column(
               width = 8,
               plotlyOutput(outputId = 'umap'),
-              downloadButton("download_umap", "Download UMAP")
+              downloadButton("download_umaps", "Download UMAP")
             ),
             column(
               width = 4,
@@ -260,8 +261,7 @@ server <- function(input, output, session){
           fluidRow(
             column(
               width = 8,
-              plotlyOutput(outputId = 'umap3d'),
-              downloadButton("download_umap", "Download UMAP")
+              plotlyOutput(outputId = 'umap3d')
             ),
             column(
               width = 4,
@@ -303,13 +303,27 @@ server <- function(input, output, session){
       remove_modal_spinner()
       shinyjs::enable("runplot")
       
+      ###############
+      output$download_umaps <- downloadHandler(
+        filename = function(){
+          "myplot.png"
+        },
+        content = function(file){
+          #p <- create_metadata_umap_hover(obj, input$metadata_col)$x$attrs[[1]]$plot
+          #ggsave(filename = file, plot = p, device = "png")
+          plot_data <- create_metadata_umap_hover(obj, input$metadata_col)
+          ggsave(filename = file, plot = plot_data$ggplot, device = "png")
+        }
+      )
+      ##############
+      
       }
       
       #for PCA
       else if (input$dimplot == "PCA"){
         output$pca <- renderPlotly({
           if (!is.null(input$metadata_col)) {
-            create_metadata_pca_hover(obj, input$metadata_col)
+            create_metadata_pca_hover(obj, input$metadata_col)$plotly
           }
         })
         
@@ -356,8 +370,7 @@ server <- function(input, output, session){
             fluidRow(
               column(
                 width = 8,
-                plotlyOutput(outputId = 'pca3d'),
-                downloadButton("download_pca", "Download PCA")
+                plotlyOutput(outputId = 'pca3d')
               ),
               column(
                 width = 4,
@@ -399,13 +412,27 @@ server <- function(input, output, session){
         remove_modal_spinner()
         shinyjs::enable("runplot")
         
+        ###############
+        output$download_pca <- downloadHandler(
+          filename = function(){
+            "my_pca_plot.png"
+          },
+          content = function(file){
+            #p <- create_metadata_umap_hover(obj, input$metadata_col)$x$attrs[[1]]$plot
+            #ggsave(filename = file, plot = p, device = "png")
+            plot_data <- create_metadata_pca_hover(obj, input$metadata_col)
+            ggsave(filename = file, plot = plot_data$ggplot, device = "png")
+          }
+        )
+        ##############
+        
       }
       
       #for t-SNE
       else if (input$dimplot == "t-SNE"){
         output$tsne <- renderPlotly({
           if (!is.null(input$metadata_col)) {
-            create_metadata_tsne_hover(obj, input$metadata_col)
+            create_metadata_tsne_hover(obj, input$metadata_col)$plotly
           }
         })
         
@@ -452,8 +479,7 @@ server <- function(input, output, session){
             fluidRow(
               column(
                 width = 8,
-                plotlyOutput(outputId = 'tsne3d'),
-                downloadButton("download_tsne", "Download t-SNE")
+                plotlyOutput(outputId = 'tsne3d')
               ),
               column(
                 width = 4,
@@ -495,21 +521,28 @@ server <- function(input, output, session){
         remove_modal_spinner()
         shinyjs::enable("runplot")
         
+        ###############
+        output$download_tsne <- downloadHandler(
+          filename = function(){
+            "my_tsne_plot.png"
+          },
+          content = function(file){
+            #p <- create_metadata_umap_hover(obj, input$metadata_col)$x$attrs[[1]]$plot
+            #ggsave(filename = file, plot = p, device = "png")
+            plot_data <- create_metadata_tsne_hover(obj, input$metadata_col)
+            ggsave(filename = file, plot = plot_data$ggplot, device = "png")
+          }
+        )
+        ##############
+        
       }
+      
+      
       }
-  })
+  }
   
-  
-  ###############
-  output$download_umap <- downloadHandler(
-    filename = function(){
-      "myplot.png"
-    },
-    content = function(file){
-      save_image(output$umap, file)
-    }
   )
-  ##############
+  
   
 #for uploading h5
   observeEvent(input$convertupload, {

@@ -118,7 +118,8 @@ create_metadata_pca_hover <- function(obj, col){
       geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
   }
-  ggplotly(pca)
+  #ggplotly(pca)
+  list(ggplot = pca, plotly = ggplotly(pca))
 }
 
 create_metadata_umap_hover <- function(obj, col){
@@ -132,7 +133,8 @@ create_metadata_umap_hover <- function(obj, col){
       geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
   }
-  ggplotly(umap)
+  #ggplotly(umap)
+  list(ggplot = umap, plotly = ggplotly(umap))
 }
 
 create_metadata_tsne_hover <- function(obj, col){
@@ -146,7 +148,8 @@ create_metadata_tsne_hover <- function(obj, col){
       geom_text(aes(x = 0.5, y = 0.5, label = "col doesn't exist"), size = 20, color = "gray73", fontface = "bold") +
       theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))
   }
-  ggplotly(tsne)
+  #ggplotly(tsne)
+  list(ggplot = tsne, plotly = ggplotly(tsne))
 }
 
 create_metadata_pca_3d <- function(obj, col){
@@ -192,7 +195,7 @@ create_metadata_umap_3d <- function(obj, col){
   plot.data$label <- paste(rownames(plot.data))
   
   # Plot your data, in this example my Seurat object had 21 clusters (0-20)
-  plot_ly(data = plot.data, 
+  umap_3d <- plot_ly(data = plot.data, 
                  x = ~umap_1, y = ~umap_2, z = ~umap_3, 
                  color = ~seurat_clusters, 
                  type = "scatter3d", 
@@ -200,6 +203,7 @@ create_metadata_umap_3d <- function(obj, col){
                  marker = list(size = 5, width=2), # controls size of points
                  text=~label, #This is that extra column we made earlier for which we will use for cell ID
                  hoverinfo="text")
+  list(ggplot = umap_3d, plotly = ggplotly(umap_3d))
 }
 
 # create_feature_plot_tsne_hover <- function(obj, gene) {
