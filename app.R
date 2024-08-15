@@ -620,9 +620,12 @@ server <- function(input, output, session){
 #clear all sidebar inputs when 'Reset' button is clicked for run
   observeEvent(input$resetplot, {
     shinyjs::reset("file")
-    removeTab("main_tabs", "UMAP")
-    removeTab("main_tabs", "PCA")
-    removeTab("main_tabs", "t-SNE")
+    removeTab("main_tabs", "2D UMAP")
+    removeTab("main_tabs", "2D PCA")
+    removeTab("main_tabs", "2D t-SNE")
+    removeTab("main_tabs", "3D UMAP")
+    removeTab("main_tabs", "3D PCA")
+    removeTab("main_tabs", "3D t-SNE")
     removeTab("main_tabs", "Gene Expression")
     shinyjs::disable("run")
   })
