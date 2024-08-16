@@ -348,7 +348,7 @@ server <- function(input, output, session){
       ###############
       output$download_umaps <- downloadHandler(
         filename = function(){
-          "myplot.png"
+          "umap.png"
         },
         content = function(file){
           #p <- create_metadata_umap_hover(obj, input$metadata_col)$x$attrs[[1]]$plot
