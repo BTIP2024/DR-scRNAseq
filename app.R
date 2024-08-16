@@ -222,7 +222,7 @@ server <- function(input, output, session){
     #download
     output$download_drobj <- downloadHandler(
       filename = function(){
-        paste0('SeuratObj', '.rds')
+        paste0('Processed_SeuratObj', '.rds')
           },
       content = function(file){
         show_modal_spinner(text = "Downloading...")
@@ -602,7 +602,7 @@ server <- function(input, output, session){
     #download
     output$downloaddata <- downloadHandler(
       filename = function(){
-        paste0('SeuratObjh5', '.rds')
+        paste0('Starting_file', '.rds')
       },
       content = function(file){
         show_modal_spinner(text = "Downloading...")
@@ -657,7 +657,7 @@ server <- function(input, output, session){
     #download
     output$downloaddir <- downloadHandler(
       filename = function(){
-        paste0('SeuratObjh5', '.rds')
+        paste0('Starting_file', '.rds')
       },
       content = function(file){
         show_modal_spinner(text = "Downloading...")
