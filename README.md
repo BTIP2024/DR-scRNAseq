@@ -1,6 +1,6 @@
 # 🧬 Seurat Preprocessing Shiny App
 
-Welcome to the Seurat Preprocessing Shiny App! This app provides a user-friendly interface for performing various preprocessing and analysis tasks on single-cell RNA sequencing data using the Seurat package. Below is an overview of the workflows available in the app:
+Welcome to the DR-scRNASeq! This app provides a user-friendly interface for performing various preprocessing and analysis tasks on single-cell RNA sequencing data using the Seurat package. Below is an overview of the workflows available in the app:
 
 ## 🚀 Features
 
