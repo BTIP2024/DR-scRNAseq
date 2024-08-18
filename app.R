@@ -116,15 +116,15 @@ ui <- dashboardPage(
                                    includeMarkdown("instructions.Rmd"),
                                    conditionalPanel(condition = "input.tab == 'upload'",
                                       tags$a(
-                                        href = "https://drive.google.com/uc?export=download&id=1l1iFIx05iu_5pHw1ciWrhogPdpk0L9K5",  # The URL you want to link to
-                                        class = "btn btn-primary",        # Bootstrap button classes
+                                        href = "https://drive.google.com/uc?export=download&id=1a_JUPefKwaDWNQp2uRvF4hOuoKfADbX0",  
+                                        class = "btn btn-primary",        
                                         style = "background-color: #007bff; border-color: #007bff;",
                                         tags$i(class = "fa fa-download", style = "margin-right: 8px;"),
                                         "Download sample h5 file"                    # Button text
                                       ),
                                       tags$a(
-                                        href = "https://drive.google.com/uc?export=download&id=17IRibxal4LdWzfJKbJpCNk4RqHyLx9x9",  # The URL you want to link to
-                                        class = "btn btn-primary",        # Bootstrap button classes
+                                        href = "https://drive.google.com/uc?export=download&id=17IRibxal4LdWzfJKbJpCNk4RqHyLx9x9",  
+                                        class = "btn btn-primary",        
                                         style = "background-color: #007bff; border-color: #007bff;",
                                         tags$i(class = "fa fa-download", style = "margin-right: 8px;"),
                                         "Download sample folder"                    # Button text
