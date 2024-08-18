@@ -21,3 +21,11 @@ Welcome to the Seurat Preprocessing Shiny App! This app provides a user-friendly
    - **Run**: Press the `Run` button to perform the dimensionality reduction and generate visualizations.
    - **Explore**: Two tabs will appear, allowing you to explore the data through the generated plots.
    - **Download Plots**: You will also have the option to download the plots for further analysis or presentation.
+
+## Getting Started
+
+To get started with the Seurat Preprocessing Shiny App, follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/seurat-shiny-app.git
